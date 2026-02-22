@@ -28,7 +28,7 @@ else:
                 with st.spinner("AI 正在全力修复中，大约需要 5-10 秒..."):
                     # 调用云端模型
                     output = replicate.run(
-                        ""tencentarc/gfpgan:0fbacf7afc696e4f97f81385585719902303c0e2124b100752b25b0337604d65"",
+                        "tencentarc/gfpgan:0fbacf7afc696e4f97f81385585719902303c0e2124b100752b25b0337604d65",
                         input={"img": uploaded_file}
                     )
                     
