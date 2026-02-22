@@ -3,14 +3,13 @@ import replicate
 import os
 import requests
 
-# 1. 网页配置：设置标题和布局
+# 1. 网页配置
 st.set_page_config(page_title="佰萬老照片修复馆", page_icon="📸", layout="centered")
 
-# 自定义 CSS 样式，美化按钮和文字
+# 自定义 CSS 样式
 st.markdown("""
     <style>
     .stButton>button { width: 100%; border-radius: 20px; background-color: #FF4B4B; color: white; height: 3em; }
-    .main { text-align: center; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -18,7 +17,7 @@ st.title("📸 佰萬老照片修复馆")
 st.subheader("用 AI 唤醒尘封的记忆")
 st.markdown("---")
 
-# 2. 钥匙配置：强制从 Secrets 读取
+# 2. 钥匙配置
 api_token = st.secrets.get("REPLICATE_API_TOKEN")
 
 if not api_token:
@@ -37,8 +36,8 @@ if uploaded_file:
     
     if st.button("开始神奇修复 ✨"):
         try:
-            with st.spinner("AI 正在全力修复中，大约需要 5-10 秒..."):
-                # 使用官方最稳定的 GFPGAN v1.4 版本，彻底解决 422 报错
+            with st.spinner("AI 正在全力修复中..."):
+                # 锁定官方稳定版本
                 output = replicate.run(
                     "tencentarc/gfpgan:9283608cc6b7be6b656151167cf3069c4e6ae623c39c1f366e2c9a2990e63ad7",
                     input={
@@ -49,4 +48,22 @@ if uploaded_file:
                     }
                 )
                 
-                with
+                with col2:
+                    st.image(output, caption="修复后 (After)", use_container_width=True)
+                
+                st.success("✨ 修复成功！")
+                st.balloons()
+                
+                # 下载逻辑
+                img_data = requests.get(output).content
+                st.download_button(
+                    label="📥 保存高清修复图",
+                    data=img_data,
+                    file_name="fixed_photo.png",
+                    mime="image/png"
+                )
+        except Exception as e:
+            st.error(f"❌ 修复失败：{e}")
+
+st.markdown("---")
+st.caption("© 2026 佰萬科技 | 技术支持：Vibe Coding")
