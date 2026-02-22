@@ -16,13 +16,14 @@ st.title("📸 佰萬老照片修复馆")
 st.subheader("用新动力唤醒老记忆")
 st.markdown("---")
 
-# 2. 令牌注入：强制刷新环境变量
+# 2. 令牌配置
 api_token = st.secrets.get("REPLICATE_API_TOKEN")
 
 if not api_token:
-    st.error("⚠️ 令牌未识别！请在 Secrets 中配置 REPLICATE_API_TOKEN。")
+    st.error("⚠️ 令牌未识别！请在 Secrets 中配置新的 REPLICATE_API_TOKEN。")
     st.stop()
 else:
+    # 强制注入环境变量，确保付费权限生效
     os.environ["REPLICATE_API_TOKEN"] = api_token
 
 # 3. 功能区
@@ -36,9 +37,10 @@ if uploaded_file:
     if st.button("开始神奇修复 ✨"):
         try:
             with st.spinner("新令牌已就绪，AI 正在为您全力修复..."):
-                # 使用腾讯官方 GFPGAN v1.4 的最新物理地址
+                # --- 修改重点：不写长版本号，直接调用模型名称 ---
+                # 这样可以彻底避开 422 "版本不存在" 的报错
                 output = replicate.run(
-                    "tencentarc/gfpgan:9283608cc6b7be6b656151167cf3069c4e6ae623c39c1f366e2c9a2990e63ad7",
+                    "tencentarc/gfpgan",
                     input={
                         "img": uploaded_file,
                         "upscale": 2,
@@ -50,7 +52,7 @@ if uploaded_file:
                 if output:
                     with col2:
                         st.image(output, caption="修复后", use_container_width=True)
-                    st.success("✨ 成功了！新令牌果然给力。")
+                    st.success("✨ 修复成功！")
                     st.balloons()
                     
                     # 下载功能
@@ -65,4 +67,4 @@ if uploaded_file:
             st.error(f"❌ 修复失败：{e}")
 
 st.markdown("---")
-st.caption("© 2026 佰萬科技 | 令牌已更新至最新版本")
+st.caption("© 2026 佰萬科技 | 动态版本适配中")
